@@ -5,13 +5,17 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.ArrayAdapter
 import android.widget.Toast
+import io.reactivex.schedulers.Schedulers
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.axon.test.sumsung.com.randomuserstesttask.network.RetrofitApi
+import java.axon.test.sumsung.com.randomuserstesttask.network.UserApiClient
 import java.axon.test.sumsung.com.randomuserstesttask.pojo.Result
+import io.reactivex.android.schedulers.AndroidSchedulers
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -21,30 +25,23 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val retrofit = Retrofit.Builder()
-            .baseUrl(RetrofitApi.BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
+         val userApiClient = UserApiClient()
 
-        val retrofitApi = retrofit.create(RetrofitApi::class.java)
+         val retrofitApi = userApiClient.getRetrofitApi()
 
-        val call = retrofitApi.getUser()
+        retrofitApi.getUser()
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                {result ->
+                    val user = result!!.results.get(0)
+                    Log.d(TAG, "onResponse: ${user.name.first} ${user.name.last} " +
+                            "${user.cell} ${user.phone} ${user.email} ${user.picture.large}")
+                 },
+                { e -> Toast.makeText(applicationContext, e.message, Toast.LENGTH_SHORT).show() }
+            )
 
-        call.enqueue(object : Callback<Result> {
 
-            override fun onResponse(call: Call<Result>, response: Response<Result>) {
-                val result = response.body()
-                val user = result!!.results.get(0)
-
-                Log.d(TAG, "onResponse: ${user.name.first} ${user.name.last} " +
-                        "${user.cell} ${user.phone} ${user.email} ${user.picture.large}")
-            }
-
-            override fun onFailure(call: Call<Result>, t: Throwable) {
-                Toast.makeText(applicationContext, t.message, Toast.LENGTH_SHORT).show()
-            }
-
-        })
     }
 
 }

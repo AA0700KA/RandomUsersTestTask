@@ -1,5 +1,7 @@
 package java.axon.test.sumsung.com.randomuserstesttask.network
 
+import io.reactivex.Observable
+import io.reactivex.Single
 import retrofit2.Call
 import retrofit2.http.GET
 import java.axon.test.sumsung.com.randomuserstesttask.pojo.Result
@@ -11,6 +13,6 @@ interface RetrofitApi {
     }
 
     @GET("api")
-    fun getUser() : Call<Result>
+    fun getUser() : Observable<Result>
 
 }
