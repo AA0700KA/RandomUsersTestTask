@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
@@ -23,7 +24,7 @@ import java.axon.test.sumsung.com.randomuserstesttask.pojo.User
 
 class MainActivity : AppCompatActivity(), UserAdapter.Listener {
 
-    val TAG = "user_data"
+    private val TAG = "user_data"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,8 +37,15 @@ class MainActivity : AppCompatActivity(), UserAdapter.Listener {
         recycler_view.adapter = userAdapter
         recycler_view.layoutManager = LinearLayoutManager(this)
 
-
         val viewModel = ViewModelProviders.of(this).get(MainViewModel::class.java)
+
+        recycler_view.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                viewModel.loadUsers(20)
+            }
+        })
+
+        viewModel.loadUsers(20)
         viewModel.allUsers.observe(this, Observer {
             val users  = it;
             userAdapter.update(users!!)
@@ -75,3 +83,5 @@ class MainActivity : AppCompatActivity(), UserAdapter.Listener {
     }
 
 }
+
+

@@ -8,25 +8,31 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import java.axon.test.sumsung.com.randomuserstesttask.network.UserApiClient
 import java.axon.test.sumsung.com.randomuserstesttask.pojo.User
+import java.util.concurrent.locks.ReentrantLock
 
 class MainViewModel : ViewModel() {
 
     val allUsers: MutableLiveData<List<User>> = MutableLiveData()
     val error: MutableLiveData<String> = MutableLiveData()
+    private var loaded : Boolean = false
 
-    init {
+    fun loadUsers(count : Int) {
 
-        val retrofitApi =  UserApiClient.instance
+        if (!loaded) {
+            loaded = true
+            val retrofitApi = UserApiClient.instance
 
-        retrofitApi.getUser()
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(
-                { result ->
-                    uploadUser(result!!.results.get(0))
-                },
-                { e -> sendError(e.message) }
-            )
+            retrofitApi.getUser()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                    { result ->
+                        uploadUser(result!!.results.get(0), count)
+                    },
+                    { e -> sendError(e.message) }
+                )
+        }
+
     }
 
 
@@ -34,14 +40,15 @@ class MainViewModel : ViewModel() {
         error.value = errorMassage
     }
 
-    private fun uploadUser(user : User) {
+    private fun uploadUser(user : User, count : Int) {
         val allUsersList = mutableListOf<User>()
 
-        for (x in 0 until 40) {
+        for (x in 0 until count) {
             allUsersList.add(user)
         }
 
         allUsers.value = allUsersList
+        loaded = false
     }
 
 }

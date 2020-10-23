@@ -18,7 +18,7 @@ class UserAdapter(private val listener : Listener) : RecyclerView.Adapter<UserAd
         fun userInfo(user : User)
     }
 
-    private var mUsers = listOf<User>()
+    private var mUsers = mutableListOf<User>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): UserViewHolder {
         val view = LayoutInflater.from(parent.context)
@@ -27,7 +27,7 @@ class UserAdapter(private val listener : Listener) : RecyclerView.Adapter<UserAd
     }
 
     fun update(users : List<User>) {
-        mUsers = users
+        mUsers.addAll(users)
         notifyDataSetChanged()
     }
 
