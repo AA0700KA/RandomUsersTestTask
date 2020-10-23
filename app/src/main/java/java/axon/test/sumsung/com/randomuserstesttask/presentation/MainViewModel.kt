@@ -11,23 +11,24 @@ import java.axon.test.sumsung.com.randomuserstesttask.pojo.User
 
 class MainViewModel : ViewModel() {
 
-    val allUsers : MutableLiveData<List<User>> = MutableLiveData()
-    val error : MutableLiveData<String> = MutableLiveData()
+    val allUsers: MutableLiveData<List<User>> = MutableLiveData()
+    val error: MutableLiveData<String> = MutableLiveData()
 
-    fun loadUsers() {
-        val userApiClient = UserApiClient()
-        val retrofitApi = userApiClient.getRetrofitApi()
+    init {
+
+        val retrofitApi =  UserApiClient.instance
 
         retrofitApi.getUser()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
-                {result ->
+                { result ->
                     uploadUser(result!!.results.get(0))
                 },
                 { e -> sendError(e.message) }
             )
     }
+
 
     private fun sendError(errorMassage : String?) {
         error.value = errorMassage

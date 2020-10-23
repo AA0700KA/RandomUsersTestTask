@@ -5,8 +5,12 @@ import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.LinearLayoutManager
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
+import android.view.View
 import android.widget.Toast
 import io.reactivex.schedulers.Schedulers
 import java.axon.test.sumsung.com.randomuserstesttask.network.UserApiClient
@@ -32,8 +36,8 @@ class MainActivity : AppCompatActivity(), UserAdapter.Listener {
         recycler_view.adapter = userAdapter
         recycler_view.layoutManager = LinearLayoutManager(this)
 
+
         val viewModel = ViewModelProviders.of(this).get(MainViewModel::class.java)
-        viewModel.loadUsers()
         viewModel.allUsers.observe(this, Observer {
             val users  = it;
             userAdapter.update(users!!)
@@ -43,6 +47,20 @@ class MainActivity : AppCompatActivity(), UserAdapter.Listener {
             Toast.makeText(applicationContext, it, Toast.LENGTH_SHORT).show()
         })
 
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.main_menu, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        if (item!!.itemId == R.id.grid) {
+            recycler_view.layoutManager = GridLayoutManager(this, 2)
+        } else {
+            recycler_view.layoutManager = LinearLayoutManager(this)
+        }
+        return true
     }
 
     override fun userInfo(user: User) {

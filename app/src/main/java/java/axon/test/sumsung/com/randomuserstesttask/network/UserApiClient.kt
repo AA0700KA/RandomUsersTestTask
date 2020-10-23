@@ -8,25 +8,32 @@ import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 
 
-class UserApiClient {
+object UserApiClient {
 
-    fun getRetrofitApi() : RetrofitApi {
-        val interceptor = HttpLoggingInterceptor()
-        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY)
-        val client = OkHttpClient.Builder().addInterceptor(interceptor).build()
+    private var ourInstance : RetrofitApi? = null
+
+    val instance : RetrofitApi
+     get() {
+         if (ourInstance == null) {
+             val interceptor = HttpLoggingInterceptor()
+             interceptor.setLevel(HttpLoggingInterceptor.Level.BODY)
+             val client = OkHttpClient.Builder().addInterceptor(interceptor).build()
 
 
-        val gson = GsonBuilder()
-            .create()
+             val gson = GsonBuilder()
+                 .create()
 
-        val retrofit = Retrofit.Builder()
-            .baseUrl(RetrofitApi.BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create(gson))
-            .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-            .client(client)
-            .build()
+             val retrofit = Retrofit.Builder()
+                 .baseUrl(RetrofitApi.BASE_URL)
+                 .addConverterFactory(GsonConverterFactory.create(gson))
+                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                 .client(client)
+                 .build()
 
-        return retrofit.create(RetrofitApi::class.java)
-    }
+             ourInstance = retrofit.create(RetrofitApi::class.java)
+         }
+
+         return ourInstance!!
+     }
 
 }

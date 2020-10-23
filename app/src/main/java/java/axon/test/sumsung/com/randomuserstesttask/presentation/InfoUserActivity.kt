@@ -3,11 +3,15 @@ package java.axon.test.sumsung.com.randomuserstesttask.presentation
 import android.os.Bundle
 import android.os.PersistableBundle
 import android.support.v7.app.AppCompatActivity
+import android.view.View
 import com.bumptech.glide.Glide
 import kotlinx.android.synthetic.main.info_user_layout.*
 import java.axon.test.sumsung.com.randomuserstesttask.R
 import java.axon.test.sumsung.com.randomuserstesttask.loadImage
 import java.text.SimpleDateFormat
+import android.content.Intent
+import android.net.Uri
+
 
 class InfoUserActivity : AppCompatActivity() {
 
@@ -31,6 +35,13 @@ class InfoUserActivity : AppCompatActivity() {
         val date = simpleDateFormat.parse(dateTxt)
         val dateResult = simpleDateFormat.format(date)
         years_old.text = dateResult
+    }
+
+    fun callNumber(view : View) {
+        val intent = Intent(Intent.ACTION_DIAL, Uri.parse("tel:${phone.text}"))
+        if (intent.resolveActivity(packageManager) != null) {
+            startActivity(intent)
+        }
     }
 
 }
